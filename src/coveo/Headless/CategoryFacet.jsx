@@ -1,4 +1,3 @@
-// CategoryFacet.js
 import React, { useEffect, useState } from 'react';
 import { buildFacet } from '@coveo/headless';
 import { engine } from './engine';
