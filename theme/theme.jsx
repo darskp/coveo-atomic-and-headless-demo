@@ -20,6 +20,7 @@ export const buildTheme = (P) =>
       h6: {
         fontWeight: P.design.typography.h6.weight,
         letterSpacing: P.design.typography.h6.letterSpacing,
+        fontSize: "1rem", 
       },
       body1: {
         fontSize: P.design.typography.body1.size,
@@ -51,28 +52,44 @@ export const buildTheme = (P) =>
           },
         },
       },
-      MuiChip: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            fontWeight: "bold",
-            padding: "6px 12px",
-            borderRadius: "9999px",
-            backgroundColor: theme.palette.secondary.main,
-            color: theme.palette.secondary.contrastText,
-            cursor: "pointer",
-            "&:hover": {
-              backgroundColor: theme.palette.secondary.dark,
-            },
-          }),
-        },
-      },
       MuiPaper: {
         styleOverrides: {
           root: {
             borderRadius: P.design.radius,
-            padding: "24px",
-            marginBottom: "24px",
+            padding: "16px",
+            marginBottom: "16px",
             boxShadow: P.design.shadows.card,
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            transition: "all 0.2s ease"
+          },
+        },
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            "& .MuiInputBase-root": {
+              borderRadius: "8px",
+              fontSize: "0.9rem",
+            },
+            "& .MuiInputBase-input": {
+              // height: "0.5375em", 
+            },
+          },
+        },
+      },
+      MuiListItem: {
+        styleOverrides: {
+          root: {
+            borderRadius: "6px",
+            marginBottom: "4px",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.04)",
+            },
           },
         },
       },
@@ -81,10 +98,11 @@ export const buildTheme = (P) =>
           h6: {
             fontWeight: P.design.typography.h6.weight,
             letterSpacing: P.design.typography.h6.letterSpacing,
+            fontSize: "1rem",
           },
           body1: {
-            fontSize: P.design.typography.body1.size,
-            lineHeight: P.design.typography.body1.lineHeight,
+            fontSize: "0.9rem",
+            lineHeight: "1.4",
           },
         },
       },
