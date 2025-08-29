@@ -1,15 +1,16 @@
 
-import { configureStore } from "@reduxjs/toolkit";
 import searchReducer from "./slices/searchSlice";
 
-import suggestionsReducer from "./slices/suggestionsSlice";
+import { configureStore } from "@reduxjs/toolkit";
 
-export const store = configureStore({
+ const store = configureStore({
   reducer: {
     search: searchReducer,
-    suggestions: suggestionsReducer,
   },
-  // middleware: (getDefaultMiddleware) => getDefaultMiddleware(), // default is fine
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export default store;
