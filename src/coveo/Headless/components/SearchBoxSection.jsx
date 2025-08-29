@@ -37,6 +37,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { setupSearchSubscriptions } from "../controller";
 
 function SearchBoxSection({ engine }) {
   const dispatch = useDispatch();
@@ -87,33 +88,24 @@ function SearchBoxSection({ engine }) {
   const resultList = resultListRef.current;
   const searchStatus = searchStatusRef.current;
 
-  useEffect(() => {
-    const unsubBox = searchBox.subscribe(() => {
-      const s = searchBox.state;
-      dispatch(setQuery(s.value ?? ""));
-      dispatch(setSuggestionsLoading(!!s.isLoading));
-      dispatch(setSuggestions(s.suggestions || []));
-      dispatch(setSuggestionsError(null));
+   useEffect(() => {
+    const cleanup = setupSearchSubscriptions({
+      searchBox,
+      resultList,
+      searchStatus,
+      dispatch,
+      actions: {
+        setQuery,
+        setSuggestions,
+        setSuggestionsLoading,
+        setSuggestionsError,
+        setResults,
+        setResultsLoading,
+        setResultsError,
+      },
     });
 
-    const unsubResults = resultList.subscribe(() => {
-      const s = resultList.state;
-      dispatch(setResults(Array.isArray(s.results) ? s.results : []));
-    });
-
-    const unsubStatus = searchStatus.subscribe(() => {
-      const s = searchStatus.state;
-      dispatch(setResultsLoading(!!s.isLoading));
-      dispatch(setResultsError(
-        s.hasError ? "A search error occurred." : null
-      ));
-    });
-
-    return () => {
-      unsubBox();
-      unsubResults();
-      unsubStatus();
-    };
+    return cleanup;
   }, [dispatch, searchBox, resultList, searchStatus]);
 
   const handleKeyDown = (e) => {
@@ -154,10 +146,10 @@ function SearchBoxSection({ engine }) {
   };
 
   const clearEverything = () => {
-    dispatch(clearAll());
+    // dispatch(clearAll());
     dispatch(clearSuggestions());
     searchBox.updateText("");
-    dispatch(clearResults());
+    // dispatch(clearResults());
   };
 
   const resultsCountText = useMemo(() => {

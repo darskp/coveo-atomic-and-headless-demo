@@ -2,6 +2,7 @@ import { Box, Container, Paper, Typography } from "@mui/material";
 import Header from "../../common/Header";
 import { engine } from "./engine";
 import SearchBoxSection from "./components/SearchBoxSection";
+import SearchPage from "./components/SearchPage";
 
 export const Headless = () => {
   return (
@@ -16,6 +17,7 @@ export const Headless = () => {
         <Container maxWidth="lg">
         <Paper elevation={3}>
           <SearchBoxSection engine={engine}/>
+          <SearchPage engine={engine}/>
         </Paper>
       </Container>
     </Box>
