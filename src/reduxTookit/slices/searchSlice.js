@@ -2,56 +2,62 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   query: "",
-  lastSubmittedQuery: "",   
+  suggestions: [],
   results: [],
-  loading: false,
-  error: null,
+  status: { isLoading: false, hasError: false },
+  facet: { values: [] },
+  pager: { currentPage: 1, currentPages: [], hasNextPage: false, hasPreviousPage: false },
+  sort: { sortCriteria: "relevancy" },
+  summary: { hasResults: false },
+  controllers: {}, 
 };
 
 const searchSlice = createSlice({
   name: "search",
   initialState,
   reducers: {
-    setQuery(state, action) {
-      state.query = action.payload ?? "";
+    setQuery: (state, action) => {
+      state.query = action.payload;
     },
-    setLastSubmittedQuery(state, action) {
-      state.lastSubmittedQuery = action.payload ?? "";
+    setSuggestions: (state, action) => {
+      state.suggestions = action.payload;
     },
-    setResults(state, action) {
-      state.results = Array.isArray(action.payload) ? action.payload : [];
+    setResults: (state, action) => {
+      state.results = action.payload;
     },
-    setResultsLoading(state, action) {
-      state.loading = !!action.payload;
+    setStatus: (state, action) => {
+      state.status = action.payload;
     },
-    setResultsError(state, action) {
-      state.error = action.payload ?? null;
+    setFacet: (state, action) => {
+      state.facet = action.payload;
     },
-    clearResults(state) {
-      state.results = [];
-      state.loading = false;
-      state.error = null;
-      state.lastSubmittedQuery = ""; 
+    setPager: (state, action) => {
+      state.pager = action.payload;
     },
-    clearAll(state) {
-      state.query = "";
-      state.lastSubmittedQuery = "";
-      state.results = [];
-      state.loading = false;
-      state.error = null;
+    setSort: (state, action) => {
+      state.sort = action.payload;
     },
+    setSummary: (state, action) => {
+      state.summary = action.payload;
+    },
+    setControllers: (state, action) => {
+      state.controllers = action.payload;
+    },
+    clearAll: () => initialState,
   },
 });
 
 export const {
   setQuery,
-  setLastSubmittedQuery,
+  setSuggestions,
   setResults,
-  setResultsLoading,
-  setResultsError,
-  clearResults,
+  setStatus,
+  setFacet,
+  setPager,
+  setSort,
+  setSummary,
+  setControllers,
   clearAll,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;
-

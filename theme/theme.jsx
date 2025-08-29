@@ -14,13 +14,15 @@ export const buildTheme = (P) =>
       P.design.shadows.level1,
       P.design.shadows.level2,
       P.design.shadows.card,
+      ...Array(21).fill("none"),
     ],
+
     typography: {
       fontFamily: P.design.typography.fontFamily,
       h6: {
         fontWeight: P.design.typography.h6.weight,
         letterSpacing: P.design.typography.h6.letterSpacing,
-        fontSize: "1rem", 
+        fontSize: "1rem",
       },
       body1: {
         fontSize: P.design.typography.body1.size,
@@ -86,7 +88,7 @@ export const buildTheme = (P) =>
             marginBottom: "4px",
             "&:hover": {
               backgroundColor: "rgba(0,0,0,0.04)",
-              cursor:'Pointer'
+              cursor: "Pointer",
             },
           },
         },
