@@ -1,13 +1,17 @@
-import { ThemeModeProvider } from '../theme/ThemeContext';
-import './App.css'
-import { Headless } from './coveo/Headless';
+import { Provider } from "react-redux";
+import { ThemeModeProvider } from "../theme/ThemeContext";
+import "./App.css";
+import { Headless } from "./coveo/Headless";
+import store from "./reduxTookit/store";
 
 function App() {
   return (
-      <ThemeModeProvider>
+    <ThemeModeProvider>
+      <Provider store={store}>
         <Headless />
-      </ThemeModeProvider>
-  )
+      </Provider>
+    </ThemeModeProvider>
+  );
 }
 
-export default App
+export default App;

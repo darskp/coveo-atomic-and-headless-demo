@@ -58,7 +58,7 @@ export const buildTheme = (P) =>
             borderRadius: P.design.radius,
             padding: "16px",
             marginBottom: "16px",
-            boxShadow: P.design.shadows.card,
+            boxShadow: P.design.shadows.level1,
           },
         },
       },
@@ -76,9 +76,6 @@ export const buildTheme = (P) =>
               borderRadius: "8px",
               fontSize: "0.9rem",
             },
-            "& .MuiInputBase-input": {
-              // height: "0.5375em", 
-            },
           },
         },
       },
@@ -89,6 +86,7 @@ export const buildTheme = (P) =>
             marginBottom: "4px",
             "&:hover": {
               backgroundColor: "rgba(0,0,0,0.04)",
+              cursor:'Pointer'
             },
           },
         },

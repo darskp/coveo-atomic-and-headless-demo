@@ -1,4 +1,24 @@
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSuggestions,
+  setResults,
+  setQuery,
+} from "../../../reduxTookit/slices/search/searchSlice";
+import {
+  submitSearch,
+  updateSearchQuery,
+} from "../../../reduxTookit/slices/search/searchThunks";
+import {
+  initControllers,
+  searchBox,
+  resultList,
+} from "../../../reduxTookit/slices/search/controllers";
+import { buildSearchBox, buildResultList } from "@coveo/headless";
+import { IconButton, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
+
 import {
   Box,
   TextField,
@@ -8,10 +28,13 @@ import {
   Typography,
   ListItemText,
 } from "@mui/material";
-import { buildSearchBox, buildResultList } from "@coveo/headless";
 
 function SearchBoxSection({ engine }) {
-  // --- Controllers ---
+  const dispatch = useDispatch();
+  const { query, suggestions, results, loading, error } = useSelector(
+    (state) => state.search
+  );
+
   const searchBoxRef = useRef(null);
   if (!searchBoxRef.current) {
     searchBoxRef.current = buildSearchBox(engine, {
@@ -30,17 +53,14 @@ function SearchBoxSection({ engine }) {
     });
   }
   const resultList = resultListRef.current;
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [results, setResults] = useState([]);
 
   useEffect(() => {
     const unsubBox = searchBox.subscribe(() => {
-      setQuery(searchBox.state.value);
-      setSuggestions(searchBox.state.suggestions || []);
+      dispatch(setQuery(searchBox.state.value));
+      dispatch(setSuggestions(searchBox.state.suggestions || []));
     });
     const unsubResults = resultList.subscribe(() => {
-      setResults(resultList.state.results || []);
+      dispatch(setResults(resultList.state.results || []));
     });
 
     return () => {
@@ -58,7 +78,7 @@ function SearchBoxSection({ engine }) {
   };
 
   const handleSuggestionClick = (val) => {
-    setQuery(val);
+    dispatch(setQuery(val));
     searchBox.updateText(val);
     searchBox.submit();
   };
@@ -76,7 +96,7 @@ function SearchBoxSection({ engine }) {
 
   const handleInputChange = (e) => {
     const val = e.target.value;
-    setQuery(val);
+    dispatch(setQuery(val));
     searchBox.updateText(val);
 
     if (val.trim() !== "") {
@@ -85,86 +105,150 @@ function SearchBoxSection({ engine }) {
   };
 
   return (
-    <Box p={3} maxWidth={700} mx="auto">
-      <TextField
-        fullWidth
-        placeholder="Search..."
-        value={query}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        sx={{
-          borderRadius: "24px",
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "24px",
-            paddingX: 2,
-          },
-        }}
-      />
+    <Box p={3} mx="auto">
+      <Box maxWidth={700} mx="auto">
+        <TextField
+  fullWidth
+  placeholder="Search..."
+  value={query}
+  onBlur={handleBlur}
+  onFocus={handleFocus}
+  onChange={handleInputChange}
+  onKeyDown={handleKeyDown}
+  sx={{
+    borderRadius: "24px",
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "24px",
+      paddingX: 2,
+    },
+  }}
+  InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <SearchIcon color="action" />
+      </InputAdornment>
+    ),
+    endAdornment: (
+      query && (
+        <InputAdornment position="end">
+          <IconButton
+            size="small"
+            onClick={() => {
+              dispatch(setQuery(""));
+              searchBox.updateText("");
+              dispatch(setResults([])); 
+            }}
+          >
+            <ClearIcon />
+          </IconButton>
+        </InputAdornment>
+      )
+    ),
+  }}
+/>
 
-      {query.trim() && suggestions.length > 0 && showSuggestions && (
-        <Paper sx={{ mt: 1, borderRadius: "12px" }}>
-          <List dense>
-            {suggestions.map((s, i) => (
-              <ListItem
-                key={i}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSuggestionClick(s.rawValue)}
-              >
-                <span
-                  dangerouslySetInnerHTML={{ __html: s.highlightedValue }}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-      )}
+        {loading && <Typography mt={2}>Loading...</Typography>}
+        {error && (
+          <Typography mt={2} color="error">
+            {error}
+          </Typography>
+        )}
+
+        {query.trim() && suggestions.length > 0 && showSuggestions && (
+          <Paper variant="outlined" sx={{ mt: 1, borderRadius: "12px" }}>
+            <List dense>
+              {suggestions.map((s, i) => (
+                <ListItem
+                  key={i}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSuggestionClick(s.rawValue)}
+                >
+                  <span
+                    dangerouslySetInnerHTML={{ __html: s.highlightedValue }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+        )}
+      </Box>
+
+      {results && results.length > 0 && (
+  <Typography mt={2}>
+    {results.length} results found for <strong>"{query}"</strong>
+  </Typography>
+)}
 
       {results.length > 0 && (
-        <Box mt={3}>
-          <List>
-            {results.map((r, i) => (
-              <ListItem
-                key={i}
-                sx={{
-                  borderBottom: "1px solid #eee",
-                  alignItems: "flex-start",
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <a
-                      href={r.uri}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: "#1976d2",
-                        fontSize: "16px",
-                        textDecoration: "none",
-                      }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.textDecoration = "underline")
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.textDecoration = "none")
-                      }
-                    >
-                      {r.title || r.uri}
-                    </a>
-                  }
-                  secondary={
-                    <Typography
-                      component="span"
-                      sx={{ fontSize: "14px", color: "#555" }}
-                    >
-                      {r.excerpt || r.raw?.uri || ""}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
+        <Box>
+        <List>
+  {results.map((r, i) => (
+    <ListItem
+      key={i}
+      sx={(theme) => ({
+        border: "1px solid",
+        borderColor: theme.palette.divider,
+        marginTop: "20px",
+        borderRadius: "8px",
+        backgroundColor: theme.palette.background.paper,
+        "&:hover": {
+          backgroundColor: theme.palette.action.hover,
+        },
+      })}
+    >
+      <ListItemText
+        primary={
+          <a
+            href={r.uri}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#1976d2",
+              fontSize: "16px",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.textDecoration = "underline")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.textDecoration = "none")
+            }
+          >
+            {r.title || r.raw?.systitle || r.uri || ""}
+          </a>
+        }
+        secondary={
+          <Box sx={{ mt: 1 }}>
+            {/* excerpt */}
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", mb: 1 }}
+            >
+              {r.excerpt || r.raw?.excerpt || ""}
+            </Typography>
+
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              <Typography variant="caption" color="text.secondary">
+                <strong>Source:</strong> {r.raw?.source || ""}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                <strong>Language:</strong>{" "}
+                {Array.isArray(r.raw?.language) ? r.raw.language.join(", ") : r.raw?.language || ""}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                <strong>Collection:</strong> {r.raw?.collection || ""}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                <strong>Score:</strong> {r.score ?? ""}
+              </Typography>
+            </Box>
+          </Box>
+        }
+      />
+    </ListItem>
+  ))}
+</List>
         </Box>
       )}
     </Box>
