@@ -16,7 +16,7 @@ function SearchBox() {
   return (
     <TextField
       fullWidth
-      placeholder="Search…"
+      placeholder="Search ex- test, pants"
       value={query}
       onChange={(e) => {
         dispatch(setQuery(e.target.value));

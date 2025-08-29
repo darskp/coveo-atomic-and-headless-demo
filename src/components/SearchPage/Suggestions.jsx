@@ -19,9 +19,16 @@ function Suggestions() {
           key={i}
           fullWidth
           onClick={() => handleSuggestionClick(s)}
-          sx={{ justifyContent: "flex-start" }}
+          sx={{
+            justifyContent: "flex-start", 
+            textTransform: "none", 
+            padding: "8px 16px", 
+          }}
         >
-          <span style={{textAlign:"starts"}} dangerouslySetInnerHTML={{ __html: s.highlightedValue }} />
+          <span
+            style={{ textAlign: "left", width: "100%", display: "block" }}
+            dangerouslySetInnerHTML={{ __html: s.highlightedValue }}
+          />
         </Button>
       ))}
     </Paper>
