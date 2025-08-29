@@ -13,12 +13,11 @@ export const Headless = () => {
       }}
     >
       <Header />
-
         <Container maxWidth="lg">
         <Paper elevation={3}>
-          <Typography variant="h6" gutterBottom>
+          {/* <Typography variant="h6" gutterBottom>
             Search Box Section
-          </Typography>
+          </Typography> */}
           <SearchBoxSection engine={engine}/>
         </Paper>
       </Container>
