@@ -9,6 +9,7 @@ import {
   buildSort,
   buildQuerySummary,
 } from "@coveo/headless";
+import { loadClickAnalyticsActions } from "@coveo/headless";
 
 import {
   setQuery,
@@ -31,6 +32,7 @@ import Facet from "./Facet";
 import Sort from "./Sort";
 import Results from "./Results";
 import Pager from "./Pager";
+import InfoSection from './InfoSection'
 
 function SearchPage({ engine }) {
   const dispatch = useDispatch();
@@ -44,12 +46,30 @@ function SearchPage({ engine }) {
   const summaryRef = useRef(null);
 
   if (!searchBoxRef.current) {
-    searchBoxRef.current = buildSearchBox(engine, { options: { numberOfSuggestions: 5 } });
-    resultListRef.current = buildResultList(engine, {
-      options: { fieldsToInclude: ["title", "excerpt", "uri", "filetype"], numberOfResults: 10 },
+    searchBoxRef.current = buildSearchBox(engine, {
+      options: { numberOfSuggestions: 5 },
     });
+
+    resultListRef.current = buildResultList(engine, {
+      options: {
+        fieldsToInclude: [
+          "title",
+          "excerpt",
+          "fsource",
+          "duration_minutes",
+          "duration_hours",
+          "destination",
+          "price",
+        ],
+        // advancedExpression: '@source=="TestDocs"',
+        numberOfResults: 10,
+      },
+    });
+
     searchStatusRef.current = buildSearchStatus(engine);
-    facetRef.current = buildFacet(engine, { options: { field: "filetype", numberOfValues: 5 } });
+    facetRef.current = buildFacet(engine, {
+      options: { field: "destination", numberOfValues: 5 },
+    });
     pagerRef.current = buildPager(engine, { options: { numberOfPages: 5 } });
     sortRef.current = buildSort(engine);
     summaryRef.current = buildQuerySummary(engine);
@@ -81,7 +101,9 @@ function SearchPage({ engine }) {
         dispatch(setQuery(searchBox.state.value ?? ""));
         dispatch(setSuggestions(searchBox.state.suggestions ?? []));
       }),
-      resultList.subscribe(() => dispatch(setResults(resultList.state.results))),
+      resultList.subscribe(() =>
+        dispatch(setResults(resultList.state.results))
+      ),
       searchStatus.subscribe(() => dispatch(setStatus(searchStatus.state))),
       facet.subscribe(() => dispatch(setFacet(facet.state))),
       pager.subscribe(() => dispatch(setPager(pager.state))),
@@ -101,15 +123,56 @@ function SearchPage({ engine }) {
     }
   }, [engine]);
 
+  
+
+const handleClick = (e, item) => {
+  // if (e) e.preventDefault(); 
+  console.log("Click logged:", item);
+  const { logDocumentOpen } = loadClickAnalyticsActions(engine);
+
+  const mockResult = {
+    title: item.title || 'Untitled Document', // Required string
+    uri: item.uri, // The document's clickable URI (string)
+    uniqueId: item.uniqueId || item.permanentid || item.uri, // Unique identifier (string); prefer @permanentid from index
+    excerpt: item.excerpt || '', // Optional summary (string)
+    raw: {
+      uri: item.uri,
+      permanentid: item.uniqueId || item.permanentid || item.uri, // For contentIDValue in analytics
+    },
+    // Optional fields (can omit or set defaults)
+    clickUri: item.uri,
+    printableUri: item.uri,
+    hasHtmlVersion: false,
+    isRecommendation: false,
+    isTopResult: false,
+    percentScore: 0,
+    score: 0,
+    rankingInfo: null,
+    excerptHighlights: [],
+    titleHighlights: [],
+    firstSentences: '',
+    firstSentencesHighlights: [],
+    summaryHighlights: [],
+    printableUriHighlights: [],
+    absentTerms: [],
+    flags: '',
+  };
+
+  engine.dispatch(logDocumentOpen(mockResult));
+};
+
   return (
     <Box p={3} maxWidth={900} mx="auto">
+      <InfoSection/>
       <SearchBox />
       <Suggestions />
       <Status />
       <Summary />
+      <hr />
       <Facet engine={engine} />
+      <hr />
       <Sort />
-      <Results />
+      <Results handleLinkClick={handleClick}/>
       <Pager />
     </Box>
   );

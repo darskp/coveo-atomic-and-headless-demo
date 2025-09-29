@@ -13,8 +13,8 @@ function Facet({ engine }) {
   };
 
   return (
-    <Box mt={3}>
-      <Typography variant="h6">File Type</Typography>
+    <Box mt={3} mb={2}>
+      <Typography variant="h6">Destination (facet)</Typography>
       <FormGroup>
         {facet.values.map((v) => (
           <FormControlLabel

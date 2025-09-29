@@ -23,15 +23,26 @@ function Sort() {
   };
 
   return (
-    <Box mt={3}>
-      <Typography variant="h6">Sort By</Typography>
+    <Box
+      mt={3}
+      display="flex"
+      justifyContent={{ xs: "flex-start", sm: "space-between" }}
+      alignItems="center"
+      flexDirection={{ xs: "column", sm: "row" }}
+      gap={1}
+    >
+      <Typography variant="h6">Results</Typography>
       <Select
         value={sort.sortCriteria || "relevancy"}
         onChange={handleChange}
-        sx={{ mt: 1, minWidth: 200 }}
+        sx={{
+          mt: 1,
+          minWidth: { xs: 120, sm: 200 },
+          fontSize: { xs: "0.875rem", sm: "1rem" },
+        }}
         MenuProps={{
           PaperProps: {
-            elevation: 4, 
+            elevation: 4,
           },
         }}
       >

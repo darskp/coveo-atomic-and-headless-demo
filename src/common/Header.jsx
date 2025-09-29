@@ -16,7 +16,7 @@ const Header = () => {
     >
       <Container maxWidth="lg" disableGutters>
         <Toolbar>
-          <Typography variant="h6">Coveo (Headless + MUI)</Typography>
+          <Typography variant="h6">Coveo Headless + React</Typography>
           <ThemeToggleChip />
         </Toolbar>
       </Container>

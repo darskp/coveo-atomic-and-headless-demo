@@ -1,3 +1,4 @@
+import { loadClickAnalyticsActions } from "@coveo/headless";
 import {
   List,
   ListItem,
@@ -8,9 +9,28 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
-function Results() {
+function Results({handleLinkClick}) {
   const results = useSelector((state) => state.search.results);
   const status = useSelector((state) => state.search.status);
+
+  // const handleClick = (e, item, position = 1) => {
+  //   e.preventDefault();
+
+  //   console.log("🟢 Click logged:", item);
+
+  //   const { logCustomDocumentOpen } = loadClickAnalyticsActions(engine);
+
+  //   engine.dispatch(
+  //     logCustomDocumentOpen({
+  //       documentUri: item.uri,
+  //       documentUriHash: item.id,
+  //       documentTitle: item.title,
+  //       collectionName: "Flights",
+  //       sourceName: "flightSearchApp",
+  //       documentPosition: position,
+  //     })
+  //   );
+  // };
 
   if (status.isLoading) {
     return (
@@ -38,66 +58,48 @@ function Results() {
           <ListItemText
             primary={
               <Box>
-               <a
-                      href={r.uri}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: "#1976d2",
-                        fontSize: 16,
-                        fontWeight: 500,
-                        textDecoration: "none",
-                      }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.textDecoration = "underline")
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.textDecoration = "none")
-                      }
-                    >
-                      {r.title || r.raw?.systitle || r.uri || "-"}
-                    </a>
-                <Box sx={{ mt: 1 }}>
-                  <Typography
-                    variant="body2"
-                    component="div"
-                    sx={{ color: "text.secondary", mb: 1 }}
-                  >
-                    {r.excerpt || r.raw?.excerpt || ""}
-                  </Typography>
+                <a
+                  href={r.uri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => handleLinkClick(e, r,)}
+                  style={{
+                    color: "#1976d2",
+                    fontSize: 16,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.textDecoration = "underline")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.textDecoration = "none")
+                  }
+                >
+                  {r.title || "-"}
+                </a>
 
+                <Box sx={{ mt: 1 }}>
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
                     <Typography
                       variant="body2"
                       component="div"
                       color="text.secondary"
                     >
-                      <strong>Source:</strong> {r.raw?.source || "-"}
+                      <strong>Duration:</strong>{" "}
+                      {r.raw?.duration_hours != null &&
+                      r.raw?.duration_minutes != null
+                        ? `${r.raw.duration_hours}h ${r.raw.duration_minutes}m`
+                        : "-"}
                     </Typography>
+
                     <Typography
                       variant="body2"
                       component="div"
                       color="text.secondary"
                     >
-                      <strong>Language:</strong>{" "}
-                      {Array.isArray(r.raw?.language)
-                        ? r.raw.language.join(", ")
-                        : r.raw?.language || "-"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      component="div"
-                      color="text.secondary"
-                    >
-                      <strong>Collection:</strong> {r.raw?.collection || "-"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      component="div"
-                      color="text.secondary"
-                    >
-                      <strong>Score:</strong>{" "}
-                      {typeof r.score === "number" ? r.score.toFixed(2) : "-"}
+                      <strong>Price:</strong>{" "}
+                      {r.raw?.price ? `₹${r.raw.price}` : "-"}
                     </Typography>
                   </Box>
                 </Box>

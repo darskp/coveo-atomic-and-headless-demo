@@ -8,7 +8,6 @@ function SearchBox() {
   const dispatch = useDispatch();
   const query = useSelector((state) => state.search.query);
   const controllers = useSelector((state) => state.search.controllers);
-
   if (!controllers.searchBox) return null;
 
   const handleSubmit = () => controllers.searchBox.submit();
@@ -16,7 +15,7 @@ function SearchBox() {
   return (
     <TextField
       fullWidth
-      placeholder="Search ex- test, pants"
+      placeholder="Search - Air India, Indigo, or SpiceJet"
       value={query}
       onChange={(e) => {
         dispatch(setQuery(e.target.value));

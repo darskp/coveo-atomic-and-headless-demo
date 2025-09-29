@@ -7,7 +7,7 @@ function Summary() {
   if (!summary.hasResults) return null;
 
   return (
-    <Typography mt={2} variant="subtitle1">
+    <Typography my={2} variant="subtitle1">
       {summary.firstResult}-{summary.lastResult} of{" "}
       {summary.total.toLocaleString()} results for <strong>"{summary.query}"</strong>
     </Typography>
